@@ -1,0 +1,79 @@
+name: ${COMPOSE_PROJECT_NAME:-nour}
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nour
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run scripts/setup.sh first}
+      MIGRATION_DB_PASSWORD: ${MIGRATION_DB_PASSWORD:?Run scripts/setup.sh first}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Run scripts/setup.sh first}
+    ports: ["127.0.0.1:${DB_PORT:-54329}:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/01-roles.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nour"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+  migrate:
+    build: {context: ./services/api, target: base}
+    environment:
+      DATABASE_URL: postgresql+psycopg://nour_owner:${MIGRATION_DB_PASSWORD}@db:5432/nour
+      JWT_SECRET: ${JWT_SECRET}
+    command: ["sh", "-c", "alembic upgrade head && python -m app.seed"]
+    depends_on: {db: {condition: service_healthy}}
+  api:
+    build: {context: ./services/api, target: base}
+    environment:
+      DATABASE_URL: postgresql+psycopg://nour_app:${APP_DB_PASSWORD}@db:5432/nour
+      JWT_SECRET: ${JWT_SECRET}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+    ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+  web:
+    build: {context: ./apps/web, target: runner}
+    environment:
+      API_INTERNAL_URL: http://api:8000
+      NODE_ENV: production
+    ports: ["127.0.0.1:${WEB_PORT:-3000}:3000"]
+    depends_on: {api: {condition: service_healthy}}
+    restart: unless-stopped
+  db-test:
+    image: postgres:17-alpine
+    profiles: ["test"]
+    environment: {POSTGRES_DB: nour_test, POSTGRES_USER: test, POSTGRES_PASSWORD: test-only-isolated}
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d nour_test"]
+      interval: 2s
+      retries: 20
+  api-test:
+    profiles: ["test"]
+    build: {context: ./services/api, target: test}
+    environment:
+      DATABASE_URL: postgresql+psycopg://test:test-only-isolated@db-test:5432/nour_test
+      JWT_SECRET: test-only-secret-longer-than-thirty-two-characters
+      ALLOWED_ORIGINS: http://testserver,http://localhost:3000
+      ENVIRONMENT: test
+    depends_on: {db-test: {condition: service_healthy}}
+    command: ["sh", "-c", "alembic upgrade head && alembic check && ruff check --no-cache app tests && pytest -q"]
+  e2e:
+    profiles: ["test"]
+    build: {context: ./apps/web, dockerfile: Dockerfile.e2e}
+    environment: {PLAYWRIGHT_BASE_URL: "http://web:3000", CI: "1"}
+    volumes: ["./apps/web/test-results:/app/test-results"]
+    depends_on: {web: {condition: service_started}}
+volumes:
+  postgres_data:

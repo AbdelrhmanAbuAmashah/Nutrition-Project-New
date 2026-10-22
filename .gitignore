@@ -1,0 +1,41 @@
+# Credentials and local agent/account configuration
+.env
+.env.*
+!.env.example
+.aws/
+.codex/
+.agents/
+
+# JavaScript build/dependency artifacts
+node_modules/
+.next/
+dist/
+coverage/
+
+# Python environments, caches and check artifacts
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local records and media; never commit real health data
+uploads/
+local-data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Editor/OS/runtime artifacts
+.DS_Store
+*.log
+.tools/
+.playwright/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.turbo/

@@ -1,0 +1,29 @@
+name: Application checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Build, migrate, seed and start the application
+        run: bash scripts/setup.sh
+      - name: PostgreSQL integration and bilingual browser checks
+        run: bash scripts/test.sh
+      - name: Service status
+        if: always()
+        run: docker compose ps --all
+      - name: Stop isolated CI services
+        if: always()
+        run: docker compose --profile test down --volumes
