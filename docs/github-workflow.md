@@ -2,6 +2,12 @@
 
 Effective from the owner's workflow instruction on 22 October 2026. The existing verified foundation is the starting baseline. Every new milestone, including this workflow setup, is developed on a separate branch and delivered through a PR.
 
+## Active repository and attribution
+
+The active origin is [AbdelrhmanAbuAmashah/Nutrition-Project-New](https://github.com/AbdelrhmanAbuAmashah/Nutrition-Project-New). After explicitly requesting that only their account appear as a contributor, the owner authorized a fresh Git history. Root commit `2bc9e56` contains the identical tracked files of the verified foundation and is authored and committed by `AbdelrhmanAbuAmashah`. Local `user.name` and the account's GitHub noreply email are verified for both author and committer. The personal email does not need to be published.
+
+The original [Nutrition-project](https://github.com/AbdelrhmanAbuAmashah/Nutrition-project) and [imported-history backup](https://github.com/AbdelrhmanAbuAmashah/Nutrition-Project-New-history-backup) preserve prior records. Historical PR/checkpoint URLs in the report intentionally point there. Do not merge/import their old branches into the active repository. The one-time clean baseline did not rewrite or delete the backups; all future changes retain normal protected PR delivery.
+
 ## Delivery sequence
 
 1. Start with a clean working tree and fetch `origin/main`. Create a descriptive feature branch from that revision; preserve other work rather than resetting it.

@@ -58,3 +58,9 @@ The initial catalog records ingredient identities and explicit preparation state
 The phase supplies application security controls and meaningful tests. Public production operation additionally needs an accepted hosting/data region, HTTPS ingress, external secret management, backup/restore policy, monitoring, email/account recovery setup, retention review and market-specific assessment. Those deployment/clinical approvals are not implied by a successful local build.
 
 Targets marked as professional-provided are recorded from the user's declaration; that field is not authenticated clinician approval. Reviewer assignment, professional identity verification and clinical sign-off are separate later workflows.
+
+## Product naming assessment
+
+Changing the visible product name is a small branding change at this stage. The English/Arabic brand and product copy are in `apps/web/lib/i18n.ts`, page metadata in `apps/web/app/layout.tsx`, and the API documentation title in `services/api/app/main.py`; README/tests would be checked alongside those edits. A replacement name has not been selected, so the displayed name remains Nour / نُور.
+
+Internal component, database/role, cookie, JWT-audience and Compose identifiers can remain stable when the display brand changes. A public-name change does not require a schema/data migration or a broad refactor. Avoid a blanket replacement of internal identifiers, which would create unnecessary session/database/container compatibility work.

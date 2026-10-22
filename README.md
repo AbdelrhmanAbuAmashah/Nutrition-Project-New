@@ -6,7 +6,7 @@ Built with Next.js/TypeScript, FastAPI, SQLAlchemy, Alembic and PostgreSQL. Clin
 
 ## Run from a fresh environment
 
-Clone [Nutrition-project](https://github.com/AbdelrhmanAbuAmashah/Nutrition-project), open its directory in a terminal, then run:
+Clone [Nutrition-Project-New](https://github.com/AbdelrhmanAbuAmashah/Nutrition-Project-New), open its directory in a terminal, then run:
 
 ```bash
 bash scripts/setup.sh

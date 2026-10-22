@@ -1,5 +1,7 @@
 # Repository workflow
 
+- Active origin: `AbdelrhmanAbuAmashah/Nutrition-Project-New`. The owner explicitly requested a clean history attributed only to `AbdelrhmanAbuAmashah`; historical repositories are backups. Do not import their branches into the active history.
+- Before committing, verify both `git var GIT_AUTHOR_IDENT` and `git var GIT_COMMITTER_IDENT` resolve to `AbdelrhmanAbuAmashah <118768074+AbdelrhmanAbuAmashah@users.noreply.github.com>`. Use repository-local identity settings and do not inherit another account's global Git identity.
 - Keep `main` stable. Create one dedicated feature branch per milestone from the latest `origin/main`, for example `feature/bilingual-core-setup` or `feature/clinical-review-queue`. Use `fix/` or `chore/` for narrowly scoped fixes or maintenance. Preserve existing uncommitted work when changing branches.
 - Never commit or push working changes directly to `main`. Publish only the feature branch and create a PR targeting `main`. Do not rewrite published history, force-push `main`, use an administrator merge bypass, or weaken branch protections to complete a task.
 - Verify relevant code, APIs and UI locally before pushing. For a full-stack milestone, run `bash scripts/setup.sh` and `bash scripts/test.sh`; the build checks formatting/TypeScript and the suite checks migrations, backend behavior and both languages at desktop/mobile sizes. Record actual results and any unavailable checks.
